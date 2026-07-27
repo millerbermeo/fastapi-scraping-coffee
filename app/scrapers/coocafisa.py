@@ -54,16 +54,12 @@ class CoocafisaScraper(BaseScraper):
         prices: list[dict] = []
 
         for slide in slides:
-            text = slide.get_text()
-            if "Factor" not in text:
+            lines = [line.strip() for line in slide.get_text().split("\n") if line.strip()]
+            if len(lines) < 2 or not lines[0].startswith("Factor"):
                 continue
 
-            match = re.search(r"Factor\s+([\d.]+)\s*\n?\s*\$?([\d.,]+)", text)
-            if not match:
-                continue
-
-            factor_name = f"Factor {match.group(1)}"
-            raw_price = match.group(2)
+            factor_name = lines[0]
+            raw_price = lines[1]
 
             if factor_name in seen:
                 continue

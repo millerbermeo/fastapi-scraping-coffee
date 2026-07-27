@@ -58,10 +58,23 @@ class ICEScraper(BaseScraper):
                 current = meta["regularMarketPrice"]
                 if prev_close and prev_close > 0:
                     result.variation = round(((current - prev_close) / prev_close) * 100, 2)
+                    result.previous_close = round(prev_close, 2)
 
                 contract = meta.get("shortName")
                 if contract:
                     result.contract = contract
+
+                if meta.get("regularMarketDayHigh") is not None:
+                    result.day_high = round(meta["regularMarketDayHigh"], 2)
+                if meta.get("regularMarketDayLow") is not None:
+                    result.day_low = round(meta["regularMarketDayLow"], 2)
+                if meta.get("regularMarketOpen") is not None:
+                    result.day_open = round(meta["regularMarketOpen"], 2)
+                if meta.get("fiftyTwoWeekHigh") is not None:
+                    result.fifty_two_week_high = round(meta["fiftyTwoWeekHigh"], 2)
+                if meta.get("fiftyTwoWeekLow") is not None:
+                    result.fifty_two_week_low = round(meta["fiftyTwoWeekLow"], 2)
+                result.exchange_name = meta.get("exchangeName")
 
                 ts = meta.get("regularMarketTime")
                 if ts:

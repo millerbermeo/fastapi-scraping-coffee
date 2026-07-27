@@ -26,10 +26,13 @@ class MarketPrice(BaseModel):
     contract: Optional[str] = None
     prices: Optional[list[dict]] = None
 
+    day_high: Optional[float] = None
+    day_low: Optional[float] = None
+    day_open: Optional[float] = None
+    previous_close: Optional[float] = None
+    fifty_two_week_high: Optional[float] = None
+    fifty_two_week_low: Optional[float] = None
+    exchange_name: Optional[str] = None
 
-class PrecioCafe(BaseModel):
-    fuente: str
-    mercado: str
-    precio: Optional[float] = None
-    moneda: str = "USD"
-    fecha: Optional[str] = None
+    mecic: Optional[float] = None
+    pdf_url: Optional[str] = None

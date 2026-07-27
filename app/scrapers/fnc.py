@@ -29,7 +29,7 @@ class FNCScraper(BaseScraper):
             resp = httpx.get(
                 self.url,
                 headers={"User-Agent": "Mozilla/5.0 Chrome/120.0.0.0"},
-                timeout=10.0,
+                timeout=20.0,
                 follow_redirects=True,
             )
             resp.raise_for_status()
@@ -38,6 +38,8 @@ class FNCScraper(BaseScraper):
             self._extract_internal_price(soup, result)
             self._extract_nyse_price(soup, result)
             self._extract_trm(soup, result)
+            self._extract_mecic(soup, result)
+            self._extract_pdf_url(soup, result)
 
             result.success = True
 
@@ -87,6 +89,20 @@ class FNCScraper(BaseScraper):
         date = self._find_date_near(soup, "Tasa de cambio")
         if date and not result.date:
             result.date = date
+
+    def _extract_mecic(self, soup: BeautifulSoup, result: MarketPrice) -> None:
+        title = self._find_menu_text(soup, "MeCIC")
+        if not title:
+            return
+
+        mecic_num = self._parse_colombian_number(title)
+        if mecic_num is not None:
+            result.mecic = mecic_num
+
+    def _extract_pdf_url(self, soup: BeautifulSoup, result: MarketPrice) -> None:
+        link = soup.find("a", href=re.compile(r"\.pdf$", re.I))
+        if link:
+            result.pdf_url = link.get("href")
 
     def _find_menu_text(self, soup: BeautifulSoup, label: str) -> Optional[str]:
         el = soup.find(class_="e-n-menu-title-text", string=re.compile(label, re.I))
