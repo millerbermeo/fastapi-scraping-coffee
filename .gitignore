@@ -1,0 +1,40 @@
+# --- Entornos virtuales -----------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# --- Bytecode / artefactos de build ----------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# --- Secretos / configuracion local ----------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Editores / IDE ---------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# --- Caches / logs ----------------------------------------------------------
+.cache/
+cache/
+logs/
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/

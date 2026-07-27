@@ -1,0 +1,62 @@
+# --- Python bytecode / build artifacts -------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# --- Virtual environments ---------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# --- Secrets / local configuration -----------------------------------------
+# Never bake environment values into the image; docker compose injects them
+# at runtime via env_file.
+.env
+.env.*
+!.env.example
+
+# --- VCS --------------------------------------------------------------------
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# --- Editors / IDE ----------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# --- Caches / logs / temp ---------------------------------------------------
+cache/
+.cache/
+logs/
+*.log
+tmp/
+.tmp/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# --- Docker / docs (not needed inside the image) ---------------------------
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
+README.md
+*.md
+LICENSE
+
+# --- Agent / tooling metadata ----------------------------------------------
+.claude/

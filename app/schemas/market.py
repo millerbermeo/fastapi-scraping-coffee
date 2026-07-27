@@ -1,9 +1,9 @@
-from dataclasses import dataclass, asdict
 from typing import Optional
 
+from pydantic import BaseModel
 
-@dataclass
-class MarketPrice:
+
+class MarketPrice(BaseModel):
     source: str
     market: str
     page_name: str = ""
@@ -24,6 +24,12 @@ class MarketPrice:
     nyse_price: Optional[float] = None
     volume: Optional[int] = None
     contract: Optional[str] = None
+    prices: Optional[list[dict]] = None
 
-    def to_dict(self) -> dict:
-        return {k: v for k, v in asdict(self).items() if v is not None}
+
+class PrecioCafe(BaseModel):
+    fuente: str
+    mercado: str
+    precio: Optional[float] = None
+    moneda: str = "USD"
+    fecha: Optional[str] = None
