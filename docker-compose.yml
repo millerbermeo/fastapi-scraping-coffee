@@ -12,11 +12,11 @@ services:
     env_file:
       - .env
 
-    # Publicado solo en loopback: accesible desde el propio servidor,
-    # no desde internet. Cambia a "${APP_PORT:-8000}:${APP_PORT:-8000}"
-    # si necesitas exponerlo hacia afuera.
+    # Publicado en todas las interfaces: accesible desde cualquier equipo de
+    # la red local. Para restringirlo al propio servidor, antepone 127.0.0.1:
+    #   - "127.0.0.1:${APP_PORT:-8000}:${APP_PORT:-8000}"
     ports:
-      - "127.0.0.1:${APP_PORT:-8000}:${APP_PORT:-8000}"
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
 
     # Development bind mounts: edit on the host, uvicorn --reload picks it up.
     # Read-only so the container can never write into your working tree.

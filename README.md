@@ -52,6 +52,11 @@ docker compose up
 API disponible en `http://localhost:8000` (o el `APP_PORT` definido en `.env`).
 Documentación interactiva en `http://localhost:8000/docs`.
 
+El puerto se publica en todas las interfaces, así que la API también responde
+desde otros equipos de la red local (`http://IP_DEL_SERVIDOR:8000`). Para
+restringirla a la propia máquina, antepone `127.0.0.1:` al mapeo de `ports` en
+`docker-compose.yml`.
+
 ### Modo desarrollo
 
 ```bash
