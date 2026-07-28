@@ -8,9 +8,7 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     debug: bool = False
 
-    cache_ttl_seconds: int = 300
-    scraper_timeout_ms: int = 30000
-    scraper_headless: bool = True
+    cache_ttl_seconds: int = 600
 
 
 settings = Settings()

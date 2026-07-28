@@ -1,9 +1,9 @@
-import asyncio
 from datetime import date as date_cls
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app.deps import get_cached
 from app.scrapers.dolar_colombia import DolarColombiaScraper
 from app.schemas.dolar import DolarColombiaResponse
 
@@ -30,4 +30,5 @@ async def get_dolar_colombia(
             )
 
     scraper = DolarColombiaScraper()
-    return await asyncio.to_thread(scraper.fetch, fecha)
+    cache_key = f"dolar:{fecha or date_cls.today().isoformat()}"
+    return await get_cached(cache_key, scraper.fetch, fecha)
