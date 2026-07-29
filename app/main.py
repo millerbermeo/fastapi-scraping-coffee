@@ -13,7 +13,7 @@ logging.basicConfig(
 
 app = FastAPI(
     title=settings.app_name,
-    description="Precio del café desde FNC, Coocafisa (Colombia) e ICE (Coffee C Futures)",
+    description="Precio del café desde FNC y Coocafisa (Colombia)",
     version=settings.app_version,
 )
 

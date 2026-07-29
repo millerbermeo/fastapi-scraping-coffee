@@ -1,5 +1,4 @@
 import logging
-import re
 from typing import Optional
 
 import httpx
@@ -39,7 +38,8 @@ class CoocafisaScraper(BaseScraper):
                 if p["price"] > 0:
                     result.price = p["price"]
                     break
-            result.date = self._extract_date(resp.text)
+            # La página no publica fecha del precio, solo el valor vigente.
+            result.updated_at = self._now_utc()
             result.success = True
 
         except Exception as e:
@@ -70,10 +70,6 @@ class CoocafisaScraper(BaseScraper):
                 prices.append({"factor": factor_name, "price": parsed, "raw": raw_price})
 
         return prices
-
-    def _extract_date(self, html: str) -> Optional[str]:
-        match = re.search(r"(\d{4}-\d{2}-\d{2})", html)
-        return match.group(1) if match else None
 
     def _parse_price(self, text: str) -> Optional[float]:
         if not text:

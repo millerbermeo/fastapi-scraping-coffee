@@ -1,18 +1,16 @@
 # Coffee Price API
 
-API REST que obtiene precios del café en tiempo real desde múltiples fuentes usando Playwright.
+API REST que obtiene precios del café desde múltiples fuentes colombianas vía HTTP (`httpx` + `BeautifulSoup`).
 
 ## Fuentes
 
 - **FNC** - Federación Nacional de Cafeteros de Colombia (precio interno, Bolsa NY, TRM)
-- **ICE** - Intercontinental Exchange (Coffee C Futures front month)
 - **Coocafisa** - Cooperativa de Caficultores de Salgar (múltiples factores)
 
 ## Instalación
 
 ```bash
 pip install -r requirements.txt
-playwright install chromium
 ```
 
 ## Uso
@@ -93,7 +91,6 @@ docker compose up
 
 - Multi-stage sobre `python:3.12-slim-bookworm`; el runtime no incluye pip cache ni herramientas de compilación.
 - Se ejecuta como usuario no root (`appuser`, uid 1001).
-- Incluye el paquete `tzdata` porque `app/scrapers/ice.py` usa `ZoneInfo("America/New_York")` y las imágenes slim de Debian no traen la base de datos IANA.
 - Incluye `uvicorn[standard]` (uvloop, httptools, watchfiles) para rendimiento y para soportar `--reload`.
 - `HEALTHCHECK` consulta `/health` con la stdlib; no requiere `curl`.
 - No se declaran servicios de base de datos, cache ni broker: la app es stateless y su cache es en memoria (`cachetools.TTLCache`).
@@ -102,18 +99,21 @@ docker compose up
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/prices/` | Precios de todas las fuentes |
-| GET | `/prices/{source}` | Precio de una fuente (`fnc`, `ice`, `coocafisa`) |
+| GET | `/prices` | Precios de todas las fuentes |
+| GET | `/prices/{source}` | Precio de una fuente (`fnc`, `coocafisa`) |
+| GET | `/dolar-colombia` | TRM de hoy, o de `?fecha=AAAA-MM-DD` |
 | GET | `/health` | Estado de la API |
 | POST | `/cache/clear` | Limpiar cache |
+
+`date` es la fecha que publica la fuente; solo FNC la trae. `updated_at` es el
+momento del scrape en UTC ISO 8601, no la fecha de publicación del precio.
 
 ## Variables de entorno
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
 | `COFFEE_DEBUG` | `false` | Modo debug (reload automático) |
-| `COFFEE_CACHE_TTL_SECONDS` | `300` | TTL del cache en segundos |
-| `COFFEE_SCRAPER_HEADLESS` | `true` | Chromium headless |
+| `COFFEE_CACHE_TTL_SECONDS` | `600` | TTL del cache en segundos |
 
 ## Estructura
 
@@ -131,7 +131,6 @@ fastapi-scraping-coffee/
 │   └── scrapers/
 │       ├── base.py          # BaseScraper (ABC)
 │       ├── fnc.py           # Scraper FNC
-│       ├── ice.py           # Scraper ICE
 │       └── coocafisa.py     # Scraper Coocafisa
 ├── run.py                   # Entry point
 ├── requirements.txt

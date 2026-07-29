@@ -41,6 +41,7 @@ class FNCScraper(BaseScraper):
             self._extract_mecic(soup, result)
             self._extract_pdf_url(soup, result)
 
+            result.updated_at = self._now_utc()
             result.success = True
 
         except Exception as e:

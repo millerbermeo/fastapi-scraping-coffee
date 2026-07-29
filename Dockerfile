@@ -17,7 +17,6 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt \
     && pip install "uvicorn[standard]" \
-    && pip install tzdata \
     && find /opt/venv -name '__pycache__' -type d -prune -exec rm -rf {} + \
     && find /opt/venv -name '*.pyc' -delete
 
