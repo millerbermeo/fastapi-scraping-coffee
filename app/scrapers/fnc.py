@@ -1,9 +1,11 @@
 import re
 import logging
+import time
 from typing import Optional
 
-import httpx
 from bs4 import BeautifulSoup
+from curl_cffi import requests as curl_requests
+from curl_cffi.requests import exceptions as curl_exc
 
 from app.scrapers.base import BaseScraper
 from app.schemas.market import MarketPrice
@@ -15,6 +17,34 @@ class FNCScraper(BaseScraper):
     source = "FNC"
     url = "https://huila.federaciondecafeteros.org/precio-delcafe/"
     LOAD_KG = 125
+    MAX_RETRIES = 3
+    RETRY_DELAY = 1.0
+
+    def _request_with_retry(self) -> curl_requests.Response:
+        last_exc = None
+        for attempt in range(self.MAX_RETRIES):
+            try:
+                resp = curl_requests.get(
+                    self.url,
+                    impersonate="chrome120",
+                    timeout=20,
+                    allow_redirects=True,
+                )
+                resp.raise_for_status()
+                return resp
+            except (curl_exc.ConnectionError, curl_exc.Timeout) as e:
+                last_exc = e
+                logger.warning("FNC request attempt %d/%d failed: %s", attempt + 1, self.MAX_RETRIES, e)
+                if attempt < self.MAX_RETRIES - 1:
+                    time.sleep(self.RETRY_DELAY * (2 ** attempt))
+            except curl_exc.HTTPError as e:
+                if e.response is not None and e.response.status_code >= 500 and attempt < self.MAX_RETRIES - 1:
+                    last_exc = e
+                    logger.warning("FNC request attempt %d/%d failed (HTTP %d)", attempt + 1, self.MAX_RETRIES, e.response.status_code)
+                    time.sleep(self.RETRY_DELAY * (2 ** attempt))
+                else:
+                    raise
+        raise last_exc
 
     def get_market_data(self) -> MarketPrice:
         result = MarketPrice(
@@ -26,13 +56,7 @@ class FNCScraper(BaseScraper):
             unit="COP",
         )
         try:
-            resp = httpx.get(
-                self.url,
-                headers={"User-Agent": "Mozilla/5.0 Chrome/120.0.0.0"},
-                timeout=20.0,
-                follow_redirects=True,
-            )
-            resp.raise_for_status()
+            resp = self._request_with_retry()
             soup = BeautifulSoup(resp.text, "html.parser")
 
             self._extract_internal_price(soup, result)

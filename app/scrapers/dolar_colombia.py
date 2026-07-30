@@ -2,8 +2,8 @@ import logging
 from datetime import date
 from typing import Optional
 
-import httpx
 from bs4 import BeautifulSoup
+from curl_cffi import requests as curl_requests
 
 from app.schemas.dolar import DolarColombiaResponse, DolarDay
 
@@ -27,11 +27,11 @@ class DolarColombiaScraper:
 
     def _fetch_day(self, date_str: Optional[str]) -> DolarDay:
         url = self.base_url + (date_str if date_str else "")
-        resp = httpx.get(
+        resp = curl_requests.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 Chrome/120.0.0.0"},
-            timeout=10.0,
-            follow_redirects=True,
+            impersonate="chrome120",
+            timeout=10,
+            allow_redirects=True,
         )
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")

@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 
-import httpx
 from bs4 import BeautifulSoup
+from curl_cffi import requests as curl_requests
 
 from app.scrapers.base import BaseScraper
 from app.schemas.market import MarketPrice
@@ -24,11 +24,11 @@ class CoocafisaScraper(BaseScraper):
             unit="COP",
         )
         try:
-            resp = httpx.get(
+            resp = curl_requests.get(
                 self.url,
-                headers={"User-Agent": "Mozilla/5.0 Chrome/120.0.0.0"},
-                timeout=10.0,
-                follow_redirects=True,
+                impersonate="chrome120",
+                timeout=10,
+                allow_redirects=True,
             )
             resp.raise_for_status()
             soup = BeautifulSoup(resp.text, "html.parser")
